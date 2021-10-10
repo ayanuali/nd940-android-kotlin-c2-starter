@@ -2,8 +2,11 @@ package com.udacity.asteroidradar.api
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.PictureOfDay
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -89,5 +92,14 @@ object NetworkUtils {
         val currentTime = calendar.time
         val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
         return dateFormat.format(currentTime)
+    }
+
+    fun moshiConverter(result: String): PictureOfDay? {
+        val moshi = Moshi.Builder()
+            .add(KotlinJsonAdapterFactory())
+            .build()
+        val adapter = moshi.adapter<PictureOfDay>(PictureOfDay::class.java)
+        val converted = adapter.fromJson(result)
+        return converted
     }
 }

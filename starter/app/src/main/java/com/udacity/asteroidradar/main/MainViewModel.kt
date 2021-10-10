@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.api.NetworkUtils.addToTodaysDate
 import com.udacity.asteroidradar.api.NetworkUtils.getTodaysDate
+import com.udacity.asteroidradar.api.NetworkUtils.moshiConverter
 import com.udacity.asteroidradar.api.NetworkUtils.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.network.AsteroidApi
+import com.udacity.asteroidradar.network.Service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,21 +22,46 @@ class MainViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
+                Log.v("com.ayanuali.test", "test1111")
                 AsteroidApi.retrofitService.getAsteroids(
                     getTodaysDate(),
                     addToTodaysDate(1),
                     Constants.API_KEY
                 ).enqueue(object : Callback<String> {
                     override fun onFailure(call: Call<String>, t: Throwable) {
-
+                        Log.v("com.ayanuali.test", "test1111222eee")
                     }
 
                     override fun onResponse(
                         call: Call<String>,
                         response: Response<String>
                     ) {
+                        Log.v("com.ayanuali.test", "test1111122222")
                         val data = response.body()?.let {
                             parseAsteroidsJsonResult(JSONObject(it))
+                        }
+
+                        val test = "string"
+
+                        Log.v("com.ayanuali.test", "another test " + data)
+                    }
+                })
+
+
+                AsteroidApi.retrofitService.getPictureOfDay(
+                    Constants.API_KEY
+                ).enqueue(object : Callback<String> {
+                    override fun onFailure(call: Call<String>, t: Throwable) {
+                        Log.v("com.ayanuali.test", "test1111333 eee")
+                    }
+
+                    override fun onResponse(
+                        call: Call<String>,
+                        response: Response<String>
+                    ) {
+                        Log.v("com.ayanuali.test", "test111133333   ")
+                        val data = response.body()?.let {
+                            moshiConverter(it)
                         }
 
                         val test = "string"
@@ -45,4 +72,15 @@ class MainViewModel : ViewModel() {
             }
         }
     }
+
+//    private fun getPictureOfTheDay() {
+////        viewModelScope.launch {
+//        try {
+//            val pictureOfDay = AsteroidApi.retrofitService.getPictureOfDay(Constants.API_KEY)
+//            Log.v("com.ayan.test", "test111 55555555")
+//        } catch (e: Exception) {
+//            Log.v("com.ayan.test", "test111 555 eeeee")
+//        }
+////        }
+//    }
 }

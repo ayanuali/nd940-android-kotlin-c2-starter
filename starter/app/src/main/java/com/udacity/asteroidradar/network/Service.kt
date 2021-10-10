@@ -18,13 +18,22 @@ interface Service {
     //  not providing start and end dats pulls data for the last 8 days including today
 //        @Query("start_date") start_date: String,
 //        @Query("end_date") end_date: String,
-    @GET("feed")
+    @GET("neo/rest/v1/feed")
     fun getAsteroids(
         @Query("start_date") start_date: String,
         @Query("end_date") end_date: String,
         @Query("api_key") api_key: String
     ): Call<String>
+
+    @GET("planetary/apod")
+    fun getPictureOfDay(
+        @Query("api_key") api_key: String
+    ): Call<String>
 }
+
+private val moshi = Moshi.Builder()
+    .add(KotlinJsonAdapterFactory())
+    .build()
 
 /**
  * Main entry point for network access. Call like `Network.devbytes.getPlaylist()`
@@ -38,5 +47,7 @@ private val retrofit = Retrofit.Builder()
 
 object AsteroidApi {
     // Configure retrofit to parse JSON and use coroutines
-    val retrofitService: Service by lazy { retrofit.create(Service::class.java) }
+    val retrofitService: Service by lazy {
+        retrofit.create(Service::class.java)
+    }
 }
